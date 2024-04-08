@@ -48,6 +48,7 @@
 #define STM32_GPIOC_PUPDR        (STM32_GPIOC_BASE+STM32_GPIO_PUPDR_OFFSET)
 #define STM32_GPIOC_ODR          (STM32_GPIOC_BASE+STM32_GPIO_ODR_OFFSET)
 #define STM32_GPIOC_BSRR         (STM32_GPIOC_BASE+STM32_GPIO_BSRR_OFFSET)
+// #define STM32_GPIOC_IDR          (STM32_GPIOC_BASE+STM32_GPIO_IDR_OFFSET)
 
 #define STM32_GPIOA_MODER        (STM32_GPIOA_BASE+STM32_GPIO_MODER_OFFSET)
 #define STM32_GPIOA_OTYPER       (STM32_GPIOA_BASE+STM32_GPIO_OTYPER_OFFSET)
@@ -141,6 +142,7 @@ int main(int argc, char *argv[])
   uint32_t *pGPIOC_OTYPER = (uint32_t *)STM32_GPIOC_OTYPER;
   uint32_t *pGPIOC_PUPDR  = (uint32_t *)STM32_GPIOC_PUPDR;
   uint32_t *pGPIOC_BSRR   = (uint32_t *)STM32_GPIOC_BSRR;
+  // uint32_t *pGPIOC_IDR    = (uint32_t *)STM32_GPIOC_IDR;
 
   /* Habilita clock GPIOC */
 
@@ -189,6 +191,9 @@ int main(int argc, char *argv[])
   reg |= (GPIO_PUPDR_NONE << GPIO_PUPDR_SHIFT(BTN_PA0));
   *pGPIOA_PUPDR = reg;
 
+  uint8_t led_ligado = 1;
+  // uint8_t valor;
+
   while(1) {
       /* Liga LED */
       // *pGPIOC_BSRR = GPIO_BSRR_RESET(13);
@@ -199,11 +204,32 @@ int main(int argc, char *argv[])
       // for (i = 0; i < LED_DELAY; i++);
 
       /* Botão apertado */
-      if( ((*pGPIOA_IDR) & GPIO_IDR_MASK(BTN_PA0)) == LOW ) {
-        *pGPIOC_BSRR = GPIO_BSRR_RESET(LED_PC13);
-      }
-      else if ( ((*pGPIOA_IDR) & GPIO_IDR_MASK(BTN_PA0)) == HIGH ) {
-        *pGPIOC_BSRR = GPIO_BSRR_SET(LED_PC13);
+      // if( ((*pGPIOA_IDR) & GPIO_IDR_MASK(BTN_PA0)) == LOW ) {
+      //   *pGPIOC_BSRR = GPIO_BSRR_RESET(LED_PC13);
+      // }
+      // else if ( ((*pGPIOA_IDR) & GPIO_IDR_MASK(BTN_PA0)) == HIGH ) {
+      //   *pGPIOC_BSRR = GPIO_BSRR_SET(LED_PC13);
+      // }
+
+      /* Botão apertado */
+      if( (*pGPIOA_IDR) & GPIO_IDR_MASK(BTN_PA0) == LOW ) {
+
+        // valor = ((*pGPIOC_IDR) & GPIO_IDR_MASK(LED_PC13));
+        // if(valor == 1) {
+        //   *pGPIOC_BSRR = GPIO_BSRR_RESET(LED_PC13);
+        // }
+        // else if(valor == 0) {
+        //   *pGPIOC_BSRR = GPIO_BSRR_SET(LED_PC13);
+        // }
+
+        if(led_ligado == 0) {
+          *pGPIOC_BSRR = GPIO_BSRR_SET(LED_PC13);
+          led_ligado = 1;
+        }
+        else if(led_ligado == 1) {
+          *pGPIOC_BSRR = GPIO_BSRR_RESET(LED_PC13);
+          led_ligado = 0;
+        }
       }
 
       for(i = 0; i < LED_DELAY; i++);
